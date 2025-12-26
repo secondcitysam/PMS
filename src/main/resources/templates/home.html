@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home | PMS</title>
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            background: #f5f7fa;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #e53935;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Welcome, <span th:text="${user.name}"></span> 👋</h2>
+    <p>You are logged in successfully.</p>
+
+    <a th:href="@{/logout}">Logout</a>
+</div>
+
+</body>
+</html>
