@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Home | PMS</title>
+    <title>Error | PMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,29 +15,27 @@
 
         .card {
             background: white;
-            padding: 32px;
+            padding: 30px;
             border-radius: 12px;
-            width: 420px;
+            width: 360px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
         }
 
         a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #e53935;
+            color: #3f51b5;
             text-decoration: none;
-            font-weight: 500;
+            display: inline-block;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Welcome, <span th:text="${user.name}"></span> 👋</h2>
-    <p>You are logged in successfully.</p>
-
-    <a th:href="@{/logout}">Logout</a>
+    <h2>Something went wrong</h2>
+    <p th:text="${error}"></p>
+    <a th:href="@{/login}">Back to Login</a>
 </div>
 
 </body>

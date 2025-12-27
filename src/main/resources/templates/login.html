@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Roboto, sans-serif;
-            background: linear-gradient(120deg, #dfe9f3, #ffffff);
+            background: linear-gradient(120deg, #e0eafc, #cfdef3);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,14 +15,15 @@
 
         .card {
             background: white;
-            padding: 30px;
-            width: 350px;
-            border-radius: 10px;
+            padding: 32px;
+            width: 360px;
+            border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         h2 {
             text-align: center;
+            margin-bottom: 20px;
             color: #333;
         }
 
@@ -38,18 +39,34 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background: #009688;
+            background: #3f51b5;
             color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
         }
 
-        .error {
-            color: red;
-            font-size: 13px;
+        .alert-success {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .alert-error {
+            color: #e53935;
             text-align: center;
             margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #3f51b5;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -58,18 +75,25 @@
 <div class="card">
     <h2>Login</h2>
 
+    <div class="alert-success" th:if="${success}" th:text="${success}"></div>
+
     <form th:action="@{/login}" th:object="${loginRequest}" method="post">
 
         <input type="email" th:field="*{email}" placeholder="Email">
-        <div class="error" th:errors="*{email}"></div>
+        <div class="alert-error" th:errors="*{email}"></div>
 
         <input type="password" th:field="*{password}" placeholder="Password">
-        <div class="error" th:errors="*{password}"></div>
+        <div class="alert-error" th:errors="*{password}"></div>
 
         <button type="submit">Login</button>
     </form>
 
-    <div class="error" th:text="${error}"></div>
+    <div class="alert-error" th:text="${error}"></div>
+
+    <div class="footer">
+        Don’t have an account?
+        <a th:href="@{/signup}">Sign up</a>
+    </div>
 </div>
 
 </body>

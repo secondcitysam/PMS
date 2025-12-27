@@ -27,6 +27,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if(user==null)
         {
+            String requestUrl = request.getRequestURI();
+
+            request.getSession(true).setAttribute("REDIRECT_AFTER_LOGIN",requestUrl);
+
             response.sendRedirect("/login");
 
             return false;

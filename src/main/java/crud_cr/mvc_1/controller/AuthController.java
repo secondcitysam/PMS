@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,7 +35,8 @@ public class AuthController {
     public String processSignup(
 
             @Valid @ModelAttribute("signupRequest") SignupRequest request ,
-            BindingResult result
+            BindingResult result,
+            RedirectAttributes redirectAttributes
     )
     {
         if(result.hasErrors())
@@ -43,6 +45,9 @@ public class AuthController {
         }
 
         authService.signup(request);
+
+        redirectAttributes.addFlashAttribute("success","Account created successfully. Please login.");
+
         return "redirect:/login";
     }
 
@@ -59,42 +64,51 @@ public class AuthController {
 
     }
 
-    @PostMapping("/login")
-    public String processLogin
-            (@Valid @ModelAttribute("loginRequest") LoginRequest request,
-             BindingResult result,
-             HttpSession session,
-             Model model)
-    {
-        if(result.hasErrors())
-        {
-            return "login";
-        }
-
-        try{
-
-            User user = authService.login(request.getEmail(),request.getPassword());
-
-            session.setAttribute("loggedInUser",user);
-
-            return "redirect:/home";
-
-        }catch (RuntimeException e)
-        {
-            model.addAttribute("error",e.getMessage());
-
-            return "login";
-        }
-    }
 
 
     //logout
 
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session,
+                         RedirectAttributes redirectAttributes) {
         session.invalidate();
+
+        redirectAttributes.addFlashAttribute("success","Logged out successfully");
+
         return "redirect:/login";
+    }
+
+
+    // process signup
+
+    @PostMapping("/login")
+    public String processLogin(
+            @Valid @ModelAttribute("loginRequest") LoginRequest request,
+            BindingResult result,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ){
+
+        if(result.hasErrors())
+        {
+            return "login";
+        }
+
+        User user = authService.login(request.getEmail(),request.getPassword());
+
+        session.setAttribute("loggedInUser",user);
+
+        String redirectUrl = (String) session.getAttribute("REDIRECT_AFTER_LOGIN");
+
+        if(redirectUrl!=null)
+        {
+            session.removeAttribute("REDIRECT_AFTER_LOGIN");
+
+            return "redirect:" + redirectUrl;
+        }
+
+        return "redirect:/home";
     }
 
 
