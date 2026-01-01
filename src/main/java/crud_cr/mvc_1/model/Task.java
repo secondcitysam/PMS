@@ -4,7 +4,6 @@ package crud_cr.mvc_1.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,39 +11,44 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Table(name = "projects")
-public class Project {
+@Table(name = "task")
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(length = 1000)
     private String description;
 
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProjectStatus status;
+    private TaskStatus status;
 
-    private LocalDate startDate;
 
-    private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskPriority priority;
 
+    private LocalDate dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id",nullable = false)
-    private User owner;
+    private Project project;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-}
 
+
+
+
+
+
+}
