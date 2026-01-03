@@ -8,11 +8,11 @@
         body {
             font-family: Roboto, sans-serif;
             background: #f5f7fa;
-            padding: 30px;
+            margin: 0;
         }
 
-        h2 {
-            margin-bottom: 10px;
+        .container {
+            padding: 30px;
         }
 
         .header {
@@ -31,7 +31,6 @@
             font-size: 14px;
         }
 
-        /* Search + sort bar */
         .filters {
             display: flex;
             gap: 10px;
@@ -43,7 +42,6 @@
             padding: 8px;
             border-radius: 6px;
             border: 1px solid #ccc;
-            font-size: 14px;
         }
 
         .filters button {
@@ -53,10 +51,8 @@
             padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
         }
 
-        /* Project cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -72,7 +68,6 @@
 
         .card h3 {
             margin-top: 0;
-            margin-bottom: 8px;
         }
 
         .card p {
@@ -82,8 +77,7 @@
 
         .status {
             font-size: 13px;
-            margin-top: 8px;
-            margin-bottom: 12px;
+            margin: 10px 0;
         }
 
         .card a {
@@ -92,11 +86,9 @@
             font-size: 14px;
         }
 
-        /* Pagination */
         .pagination {
             margin-top: 30px;
             text-align: center;
-            font-size: 14px;
         }
 
         .pagination a {
@@ -109,82 +101,58 @@
 
 <body>
 
-<div class="header">
-    <h2>Your Projects</h2>
-    <a class="btn-primary" th:href="@{/projects/new}">+ New Project</a>
-</div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<!-- SEARCH + SORT -->
-<form method="get" action="/projects" class="filters">
+<div class="container">
 
-    <input type="text"
-           name="keyword"
-           placeholder="Search projects..."
-           th:value="${keyword}">
-
-    <select name="sortBy">
-        <option value="name" th:selected="${sortBy == 'name'}">Name</option>
-        <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Created Date</option>
-        <option value="status" th:selected="${sortBy == 'status'}">Status</option>
-    </select>
-
-    <select name="direction">
-        <option value="asc" th:selected="${direction == 'asc'}">Ascending</option>
-        <option value="desc" th:selected="${direction == 'desc'}">Descending</option>
-    </select>
-
-    <button type="submit">Apply</button>
-</form>
-
-<!-- PROJECT LIST -->
-<div class="grid">
-
-    <div class="card" th:each="project : ${projectPage.content}">
-        <h3 th:text="${project.name}"></h3>
-
-        <p th:text="${project.description}"></p>
-
-        <div class="status">
-            Status:
-            <b th:text="${project.status}"></b>
-        </div>
-
-        <a th:href="@{/projects/{id}(id=${project.id})}">
-            View Dashboard →
-        </a>
+    <div class="header">
+        <h2>Your Projects</h2>
+        <a class="btn-primary" th:href="@{/projects/new}">+ New Project</a>
     </div>
 
-</div>
+    <form method="get" action="/projects" class="filters">
+        <input type="text" name="keyword" placeholder="Search..." th:value="${keyword}">
+        <select name="sortBy">
+            <option value="name" th:selected="${sortBy=='name'}">Name</option>
+            <option value="createdAt" th:selected="${sortBy=='createdAt'}">Created</option>
+            <option value="status" th:selected="${sortBy=='status'}">Status</option>
+        </select>
+        <select name="direction">
+            <option value="asc" th:selected="${direction=='asc'}">ASC</option>
+            <option value="desc" th:selected="${direction=='desc'}">DESC</option>
+        </select>
+        <button type="submit">Apply</button>
+    </form>
 
-<!-- PAGINATION -->
-<div class="pagination">
+    <div class="grid">
+        <div class="card" th:each="project : ${projectPage.content}">
+            <h3 th:text="${project.name}"></h3>
+            <p th:text="${project.description}"></p>
+            <div class="status">
+                Status: <b th:text="${project.status}"></b>
+            </div>
+            <a th:href="@{/projects/{id}(id=${project.id})}">Open →</a>
+        </div>
+    </div>
 
-    <span th:if="${projectPage.hasPrevious()}">
-        <a th:href="@{/projects(
-            page=${currentPage - 1},
-            keyword=${keyword},
-            sortBy=${sortBy},
-            direction=${direction}
-        )}">
-            ← Prev
-        </a>
-    </span>
+    <div class="pagination">
+        <span th:if="${projectPage.hasPrevious()}">
+            <a th:href="@{/projects(page=${currentPage-1},keyword=${keyword},sortBy=${sortBy},direction=${direction})}">
+                ← Prev
+            </a>
+        </span>
 
-    <span>
-        Page <b th:text="${currentPage + 1}"></b>
-        of <b th:text="${projectPage.totalPages}"></b>
-    </span>
+        <span>
+            Page <b th:text="${currentPage+1}"></b> /
+            <b th:text="${projectPage.totalPages}"></b>
+        </span>
 
-    <span th:if="${projectPage.hasNext()}">
-        <a th:href="@{/projects(
-            page=${currentPage + 1},
-            keyword=${keyword},
-            sortBy=${sortBy},
-            direction=${direction}
-        )}">
-            Next →
-        </a>
-    </span>
+        <span th:if="${projectPage.hasNext()}">
+            <a th:href="@{/projects(page=${currentPage+1},keyword=${keyword},sortBy=${sortBy},direction=${direction})}">
+                Next →
+            </a>
+        </span>
+    </div>
 
 </div>
 

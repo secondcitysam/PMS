@@ -16,8 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/projects")
@@ -25,13 +23,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @GetMapping
-    public String listProjects(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
-        List<Project> projects = projectService.getMyProjects(user);
-        model.addAttribute("projects", projects);
-        return "projects";
-    }
+
 
     @GetMapping("/new")
     public String newProject(Model model) {
@@ -70,24 +62,6 @@ public class ProjectController {
     public String listProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
-            HttpSession session,
-            Model model
-    ) {
-        User user = (User) session.getAttribute("loggedInUser");
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Project> projectPage = projectService.getMyProjects(user, pageable);
-
-        model.addAttribute("projectPage", projectPage);
-        model.addAttribute("currentPage", page);
-
-        return "projects";
-    }
-
-    @GetMapping
-    public String listProjects(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
             @RequestParam(required = false) String keyword,
@@ -95,6 +69,10 @@ public class ProjectController {
             Model model
     ) {
         User user = (User) session.getAttribute("loggedInUser");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
 
         Sort sort = direction.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
@@ -113,6 +91,7 @@ public class ProjectController {
 
         return "projects";
     }
+
 
 
 }

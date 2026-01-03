@@ -87,10 +87,7 @@ public class ProjectService {
 
 
 
-    @Cacheable(
-            value = "projects",
-            key = "#owner.id + '::' + #pageable.pageNumber + '::' + #pageable.pageSize + '::' + #pageable.sort + '::' + #keyword"
-    )
+
     public Page<Project> searchProjects(
             User owner,
             String keyword,

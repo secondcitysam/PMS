@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Project | PMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 70px);
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-family: Roboto, sans-serif;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .error {
+            color: #e53935;
+            font-size: 13px;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back a {
+            color: #3f51b5;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Create Project</h2>
+
+        <form th:action="@{/projects}"
+              th:object="${projectRequest}"
+              method="post">
+
+            <input type="text"
+                   th:field="*{name}"
+                   placeholder="Project name"
+                   required>
+            <div class="error" th:errors="*{name}"></div>
+
+            <textarea th:field="*{description}"
+                      placeholder="Project description"></textarea>
+            <div class="error" th:errors="*{description}"></div>
+
+            <select th:field="*{status}">
+                <option value="">Initial Status</option>
+                <option value="PLANNED">Planned</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+            </select>
+
+            <button type="submit">Create Project</button>
+        </form>
+
+        <div class="back">
+            <a th:href="@{/projects}">← Back to Projects</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

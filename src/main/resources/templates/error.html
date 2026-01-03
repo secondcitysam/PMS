@@ -3,14 +3,12 @@
 <head>
     <title>Error | PMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: Roboto, sans-serif;
             background: #f5f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0;
         }
 
         .card {
@@ -18,6 +16,7 @@
             padding: 30px;
             border-radius: 12px;
             width: 360px;
+            margin: 80px auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
         }
@@ -32,10 +31,12 @@
 </head>
 <body>
 
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <div class="card">
     <h2>Something went wrong</h2>
     <p th:text="${error}"></p>
-    <a th:href="@{/login}">Back to Login</a>
+    <a th:href="@{/home}">Go Home</a>
 </div>
 
 </body>

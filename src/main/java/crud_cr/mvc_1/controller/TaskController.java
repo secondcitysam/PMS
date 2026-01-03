@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/projects/{projectId}/tasks")
@@ -29,22 +28,22 @@ public class TaskController {
             @PathVariable Long projectId,
             HttpSession session,
             Model model
-    )
-    {
+    ) {
         User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        List<Task> tasks = taskService.getTasks(projectId,user);
+        List<Task> tasks = taskService.getTasks(projectId, user);
 
-        Map<TaskStatus,List<Task> > groupedTasks =
+        Map<TaskStatus, List<Task>> groupedTasks =
                 tasks.stream().collect(Collectors.groupingBy(Task::getStatus));
 
-        model.addAttribute("projectId",projectId);
+        model.addAttribute("projectId", projectId);
+        model.addAttribute("tasksByStatus", groupedTasks);
+        model.addAttribute("taskRequest", new TaskRequest());
 
-        model.addAttribute("tasksByStatus",groupedTasks);
-
-        model.addAttribute("taskRequest",new TaskRequest());
-
-        return "tasks-kanban.html";
+        return "tasks-kanban";
     }
 
     @PostMapping
@@ -52,36 +51,20 @@ public class TaskController {
             @PathVariable Long projectId,
             @Valid @ModelAttribute("taskRequest") TaskRequest request,
             BindingResult result,
-            HttpSession session,
-            Model model
-    )
-    {
+            HttpSession session
+    ) {
         User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        if(result.hasErrors())
-        {
+        if (result.hasErrors()) {
             return "redirect:/projects/" + projectId + "/tasks";
         }
-        taskService.createTask(projectId,request,user);
 
+        taskService.createTask(projectId, request, user);
         return "redirect:/projects/" + projectId + "/tasks";
     }
-
-    @PostMapping
-    public String markDone(
-            @PathVariable Long projectId,
-            @PathVariable Long taskId,
-            HttpSession session
-    )
-    {
-        User user = (User) session.getAttribute("loggedInUser");
-
-        taskService.markDone(taskId,user);
-
-        return "redirect:/projects/" + projectId + "/tasks";
-    }
-
-
 
     @PostMapping("/{taskId}/start")
     public String moveToInProgress(
@@ -90,6 +73,10 @@ public class TaskController {
             HttpSession session
     ) {
         User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         taskService.updateStatus(taskId, TaskStatus.IN_PROGRESS, user);
         return "redirect:/projects/" + projectId + "/tasks";
     }
@@ -101,8 +88,11 @@ public class TaskController {
             HttpSession session
     ) {
         User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         taskService.updateStatus(taskId, TaskStatus.DONE, user);
         return "redirect:/projects/" + projectId + "/tasks";
     }
-
 }

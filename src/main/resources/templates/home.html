@@ -7,37 +7,53 @@
         body {
             font-family: Roboto, sans-serif;
             background: #f5f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
-
+        .container {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:calc(100vh - 70px);
+        }
         .card {
-            background: white;
-            padding: 32px;
-            border-radius: 12px;
-            width: 420px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
+            background:white;
+            padding:32px;
+            border-radius:12px;
+            width:420px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.1);
+            text-align:center;
         }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #e53935;
-            text-decoration: none;
-            font-weight: 500;
+        .actions {
+            margin-top:25px;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        .btn {
+            padding:10px;
+            border-radius:6px;
+            text-decoration:none;
+            font-weight:500;
+            color:white;
+            background:#3f51b5;
+        }
+        .btn-secondary {
+            background:#009688;
         }
     </style>
 </head>
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="card">
-    <h2>Welcome, <span th:text="${user.name}"></span> 👋</h2>
-    <p>You are logged in successfully.</p>
+<div class="container">
+    <div class="card">
+        <h2>Welcome, <span th:text="${user.name}"></span> 👋</h2>
+        <p>You are logged in successfully.</p>
 
-    <a th:href="@{/logout}">Logout</a>
+        <div class="actions">
+            <a class="btn" th:href="@{/projects}">📁 View Projects</a>
+            <a class="btn btn-secondary" th:href="@{/projects/new}">➕ Create Project</a>
+        </div>
+    </div>
 </div>
 
 </body>

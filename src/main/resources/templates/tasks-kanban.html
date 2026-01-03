@@ -8,32 +8,26 @@
         body {
             font-family: Roboto, sans-serif;
             background: #f5f7fa;
+            margin: 0;
             padding: 30px;
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
         }
 
         .board {
             display: flex;
             gap: 20px;
-            margin-bottom: 40px;
+            margin: 30px 0;
         }
 
         .column {
-            background: white;
             flex: 1;
+            background: white;
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-
-        .column h3 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #333;
         }
 
         .task {
@@ -41,34 +35,11 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 12px;
-            font-size: 14px;
         }
 
-        .priority-HIGH {
-            border-left: 5px solid #e53935;
-        }
-
-        .priority-MEDIUM {
-            border-left: 5px solid #ffb300;
-        }
-
-        .priority-LOW {
-            border-left: 5px solid #43a047;
-        }
-
-        .task-title {
-            font-weight: 600;
-        }
-
-        .task small {
-            display: block;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .task-actions {
-            margin-top: 8px;
-        }
+        .priority-HIGH { border-left: 5px solid #e53935; }
+        .priority-MEDIUM { border-left: 5px solid #ffb300; }
+        .priority-LOW { border-left: 5px solid #43a047; }
 
         button {
             background: #3f51b5;
@@ -80,10 +51,6 @@
             font-size: 12px;
         }
 
-        button.secondary {
-            background: #009688;
-        }
-
         .add-task {
             max-width: 420px;
             margin: auto;
@@ -92,104 +59,62 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-
-        .add-task h3 {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-        }
     </style>
 </head>
 
 <body>
 
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <h2>Project Tasks</h2>
 
 <div class="board">
 
-    <!-- TODO COLUMN -->
     <div class="column">
         <h3>TODO</h3>
-
         <div th:each="task : ${tasksByStatus[T(crud_cr.mvc_1.model.TaskStatus).TODO]}"
              th:class="'task priority-' + ${task.priority}">
-
-            <div class="task-title" th:text="${task.title}"></div>
-
-            <small th:text="'Priority: ' + ${task.priority}"></small>
-            <small th:if="${task.dueDate}" th:text="'Due: ' + ${task.dueDate}"></small>
-
-            <div class="task-actions">
-                <form th:action="@{/projects/{pid}/tasks/{tid}/start(pid=${projectId},tid=${task.id})}"
-                      method="post">
-                    <button type="submit">Start</button>
-                </form>
-            </div>
+            <b th:text="${task.title}"></b>
+            <form th:action="@{/projects/{pid}/tasks/{tid}/start(pid=${projectId},tid=${task.id})}" method="post">
+                <button>Start</button>
+            </form>
         </div>
     </div>
 
-    <!-- IN PROGRESS COLUMN -->
     <div class="column">
         <h3>IN PROGRESS</h3>
-
         <div th:each="task : ${tasksByStatus[T(crud_cr.mvc_1.model.TaskStatus).IN_PROGRESS]}"
              th:class="'task priority-' + ${task.priority}">
-
-            <div class="task-title" th:text="${task.title}"></div>
-
-            <small th:text="'Priority: ' + ${task.priority}"></small>
-            <small th:if="${task.dueDate}" th:text="'Due: ' + ${task.dueDate}"></small>
-
-            <div class="task-actions">
-                <form th:action="@{/projects/{pid}/tasks/{tid}/done(pid=${projectId},tid=${task.id})}"
-                      method="post">
-                    <button class="secondary" type="submit">Done</button>
-                </form>
-            </div>
+            <b th:text="${task.title}"></b>
+            <form th:action="@{/projects/{pid}/tasks/{tid}/done(pid=${projectId},tid=${task.id})}" method="post">
+                <button>Done</button>
+            </form>
         </div>
     </div>
 
-    <!-- DONE COLUMN -->
     <div class="column">
         <h3>DONE</h3>
-
         <div th:each="task : ${tasksByStatus[T(crud_cr.mvc_1.model.TaskStatus).DONE]}"
              th:class="'task priority-' + ${task.priority}">
-
-            <div class="task-title" th:text="${task.title}"></div>
+            <b th:text="${task.title}"></b>
             <small>Completed ✅</small>
         </div>
     </div>
 
 </div>
 
-<!-- ADD TASK FORM -->
 <div class="add-task">
-    <h3>Add New Task</h3>
-
-    <form th:action="@{/projects/{id}/tasks(id=${projectId})}"
-          th:object="${taskRequest}"
-          method="post">
-
-        <input type="text" th:field="*{title}" placeholder="Task title" required>
-
+    <h3>Add Task</h3>
+    <form th:action="@{/projects/{id}/tasks(id=${projectId})}" th:object="${taskRequest}" method="post">
+        <input type="text" th:field="*{title}" placeholder="Title" required>
         <textarea th:field="*{description}" placeholder="Description"></textarea>
-
         <select th:field="*{priority}">
             <option value="">Priority</option>
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
             <option value="HIGH">High</option>
         </select>
-
-        <input type="date" th:field="*{dueDate}">
-
-        <button type="submit">Add Task</button>
+        <button>Add</button>
     </form>
 </div>
 

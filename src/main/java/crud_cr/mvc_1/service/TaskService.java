@@ -1,14 +1,13 @@
 package crud_cr.mvc_1.service;
 
 import crud_cr.mvc_1.dto.TaskRequest;
-import crud_cr.mvc_1.events.TaskCompletedEvent;
-import crud_cr.mvc_1.events.TaskCreatedEvent;
+import crud_cr.mvc_1.events.kafka.TaskEventPayload;
 import crud_cr.mvc_1.exception.BadRequestException;
+import crud_cr.mvc_1.events.kafka.TaskEventProducer;
 import crud_cr.mvc_1.model.*;
 import crud_cr.mvc_1.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectService projectService;
     private final ModelMapper modelMapper;
-    private final ApplicationEventPublisher eventPublisher;
+    private final TaskEventProducer taskEventProducer;
 
     public Task createTask(Long projectId, TaskRequest request, User user) {
 
@@ -39,8 +38,15 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        // 🔔 Publish event
-        eventPublisher.publishEvent(new TaskCreatedEvent(savedTask));
+        // 🔔 Kafka event: TASK_CREATED
+        taskEventProducer.sendTaskEvent(
+                TaskEventPayload.builder()
+                        .eventType("TASK_CREATED")
+                        .taskId(savedTask.getId())
+                        .taskTitle(savedTask.getTitle())
+                        .projectId(project.getId())
+                        .build()
+        );
 
         return savedTask;
     }
@@ -55,19 +61,25 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new BadRequestException("Task not found"));
 
-        // ownership enforced via project
+        // Ownership enforced via project
         projectService.getById(task.getProject().getId(), user);
 
         task.setStatus(TaskStatus.DONE);
 
-        Task saved = taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
 
-        // 🔔 Publish completion event
-        eventPublisher.publishEvent(new TaskCompletedEvent(saved));
+        // 🔔 Kafka event: TASK_COMPLETED
+        taskEventProducer.sendTaskEvent(
+                TaskEventPayload.builder()
+                        .eventType("TASK_COMPLETED")
+                        .taskId(savedTask.getId())
+                        .taskTitle(savedTask.getTitle())
+                        .projectId(savedTask.getProject().getId())
+                        .build()
+        );
 
-        return saved;
+        return savedTask;
     }
-
 
     public Task updateStatus(Long taskId, TaskStatus newStatus, User user) {
 
@@ -82,12 +94,16 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         if (newStatus == TaskStatus.DONE) {
-            eventPublisher.publishEvent(new TaskCompletedEvent(savedTask));
+            taskEventProducer.sendTaskEvent(
+                    TaskEventPayload.builder()
+                            .eventType("TASK_COMPLETED")
+                            .taskId(savedTask.getId())
+                            .taskTitle(savedTask.getTitle())
+                            .projectId(savedTask.getProject().getId())
+                            .build()
+            );
         }
 
         return savedTask;
     }
-
-
-
 }

@@ -1,42 +1,27 @@
 package crud_cr.mvc_1.config;
 
-import crud_cr.mvc_1.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-
-
+@Component
 public class AuthInterceptor implements HandlerInterceptor {
-
 
     @Override
     public boolean preHandle(
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler
-    ) throws Exception{
-
+    ) throws Exception {
 
         HttpSession session = request.getSession(false);
 
-        User user = (session!=null)
-                ? (User) session.getAttribute("loggedInUser")
-                :null;
-
-        if(user==null)
-        {
-            String requestUrl = request.getRequestURI();
-
-            request.getSession(true).setAttribute("REDIRECT_AFTER_LOGIN",requestUrl);
-
+        if (session == null || session.getAttribute("loggedInUser") == null) {
             response.sendRedirect("/login");
-
             return false;
         }
-
         return true;
     }
-
 }
